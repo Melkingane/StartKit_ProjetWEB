@@ -1,0 +1,7 @@
+# Claude Code (fichiers locaux, ne pas pousser)
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+
+# macOS
+.DS_Store

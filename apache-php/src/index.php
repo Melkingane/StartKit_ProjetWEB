@@ -51,6 +51,10 @@ Flight::route('GET /api/objets/@id:[0-9]+', function (string $id) {
     Flight::json(typerObjet($objet));
 });
 
+Flight::route('/jeu', function () {
+    Flight::render('jeu');
+});
+
 Flight::route('/', function() {
     Flight::render('accueil');
 });

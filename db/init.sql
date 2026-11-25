@@ -67,7 +67,7 @@ INSERT INTO objet (id, nom, type, geom, zoom_min, icone_url, icone_largeur, icon
  'Carton d''invitation à la fête du houblon.'),
 (6,  'Fête du houblon (Haguenau)',             'bloque_objet', ST_SetSRID(ST_MakePoint(7.78949, 48.81427), 4326),  14, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f37b.svg', 32, 32, 16, 16, TRUE,  FALSE,
  'Le code a été volé ! Le voleur « parlait de Mickey » et a laissé tomber son billet. Récupérez-le.'),
-(7,  'Billet du voleur',                       'recuperable',  ST_SetSRID(ST_MakePoint(7.78969, 48.81447), 4326),  13, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f3ab.svg', 32, 32, 16, 16, FALSE, FALSE,
+(7,  'Billet du voleur',                       'recuperable',  ST_SetSRID(ST_MakePoint(7.78969, 48.81447), 4326),  14, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f3ab.svg', 32, 32, 16, 16, FALSE, FALSE,
  'Billet de train Haguenau → Marne-la-Vallée–Chessy.'),
 (8,  'Le voleur (gare Marne-la-Vallée–Chessy)', 'bloque_objet', ST_SetSRID(ST_MakePoint(2.78260, 48.86980), 4326),  14, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f9b9.svg', 32, 32, 16, 16, TRUE,  FALSE,
  'Voleur intercepté ! Il a laissé tomber une carte chiffrée…'),

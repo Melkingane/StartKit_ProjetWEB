@@ -18,7 +18,7 @@ const SQL_OBJETS = "
     SELECT o.id, o.nom, o.type,
            ST_X(o.geom) AS lon, ST_Y(o.geom) AS lat,
            o.zoom_min, o.icone_url, o.icone_largeur, o.icone_hauteur, o.ancre_x, o.ancre_y,
-           o.depart, o.final,
+           o.depart, o.final, o.message,
            c.code,
            b.indice, b.id_libere, b.id_debloquant, b.code AS code_attendu
     FROM objet o

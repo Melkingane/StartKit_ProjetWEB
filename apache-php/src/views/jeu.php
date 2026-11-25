@@ -30,7 +30,7 @@
 
             <form v-if="objetCode" @submit.prevent="verifierCode">
                 <label>Code de {{ objetCode.nom }} :
-                    <input v-model="codeSaisi" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required autofocus>
+                    <input v-model="codeSaisi" required autofocus>
                 </label>
                 <button>Valider</button>
             </form>

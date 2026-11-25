@@ -9,7 +9,7 @@ createApp({
         return {
             inventaire: [],      // objets récupérés (objets complets renvoyés par l'API)
             selection: null,     // id de l'objet d'inventaire sélectionné, ou null
-            message: 'Zoome sur Paris pour découvrir les objets.',
+            message: 'Clique sur les objets de la carte. Zoome pour en découvrir d\'autres.',
             objetCode: null,     // objet bloqué par code dont le formulaire est ouvert
             codeSaisi: '',
             fini: false,
@@ -19,7 +19,7 @@ createApp({
     // Création de la carte une fois le HTML en place, puis chargement des objets de départ.
     // carte et marqueurs ne sont pas dans data() : Leaflet ne doit pas être rendu réactif par Vue.
     mounted() {
-        this.carte = L.map('carte').setView([48.8566, 2.3422], 13);
+        this.carte = L.map('carte').setView([50, 5], 5);  // vue sur l'Europe de l'Ouest
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap',
@@ -71,19 +71,19 @@ createApp({
                 case 'recuperable':
                     this.retirerObjet(objet);
                     this.inventaire.push(objet);
-                    this.message = `Tu as récupéré : ${objet.nom}.`;
+                    this.message = objet.message ?? `Tu as récupéré : ${objet.nom}.`;
                     if (objet.final) this.terminer();
                     break;
 
-                // Code : affiche son code à 4 chiffres
+                // Code : affiche son message et son code à 4 chiffres
                 case 'code':
-                    this.message = `${objet.nom} : le code est ${objet.code}.`;
+                    this.message = `${objet.message ?? objet.nom} Code : ${objet.code}`;
                     break;
 
-                // Bloqué par objet : s'ouvre si le bon objet est sélectionné dans l'inventaire, sinon indice
+                // Bloqué par objet : s'ouvre si le bon objet est sélectionné dans l'inventaire, sinon indice.
+                // L'objet utilisé reste dans l'inventaire (il peut resservir).
                 case 'bloque_objet':
                     if (this.selection === objet.id_debloquant) {
-                        this.inventaire = this.inventaire.filter(o => o.id !== this.selection);  // l'objet utilisé est consommé
                         this.selection = null;
                         this.debloquer(objet);
                     } else {
@@ -100,9 +100,14 @@ createApp({
             }
         },
 
-        // Soumission du formulaire : vérifie le code saisi pour l'objet bloqué par code
+        // Met une réponse sous forme comparable : minuscules, sans espaces en trop ("  Elle  est BONNE " -> "elle est bonne")
+        normaliser(texte) {
+            return texte.trim().replace(/\s+/g, ' ').toLowerCase();
+        },
+
+        // Soumission du formulaire : vérifie la réponse saisie pour l'objet bloqué par code
         verifierCode() {
-            if (this.codeSaisi === this.objetCode.code_attendu) {
+            if (this.normaliser(this.codeSaisi) === this.normaliser(this.objetCode.code_attendu)) {
                 const objet = this.objetCode;
                 this.objetCode = null;
                 this.debloquer(objet);
@@ -118,7 +123,7 @@ createApp({
                 .then(reponse => reponse.json())
                 .then(libere => {
                     this.ajouterObjet(libere);
-                    this.message = `${objet.nom} s'ouvre ! Un nouvel objet est apparu : ${libere.nom}.`;
+                    this.message = objet.message ?? `${objet.nom} s'ouvre ! Un nouvel objet est apparu : ${libere.nom}.`;
                 });
         },
 
@@ -130,7 +135,7 @@ createApp({
         // Fin de partie (le calcul et l'enregistrement du score viendront ici)
         terminer() {
             this.fini = true;
-            this.message = 'Bravo, tu as trouvé l\'objet final !';
+            this.message += ' Bravo, tu as terminé la partie !';
         },
     },
 }).mount('#app');

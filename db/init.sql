@@ -24,7 +24,8 @@ CREATE TABLE objet (
     ancre_x       INTEGER NOT NULL,                -- point de l'icône posé sur la position
     ancre_y       INTEGER NOT NULL,
     depart        BOOLEAN NOT NULL DEFAULT FALSE,  -- affiché dès le début de la partie
-    final         BOOLEAN NOT NULL DEFAULT FALSE   -- le trouver termine la partie
+    final         BOOLEAN NOT NULL DEFAULT FALSE,  -- le trouver termine la partie
+    message       TEXT                             -- texte affiché au clic (récupérable, code) ou après déblocage
 );
 
 -- ObjetCode : affiche un code à 4 chiffres
@@ -39,7 +40,7 @@ CREATE TABLE objet_bloque (
     indice        TEXT,
     id_libere     INTEGER NOT NULL REFERENCES objet(id),  -- objet qui apparaît une fois débloqué
     id_debloquant INTEGER REFERENCES objet(id),           -- bloqué par objet : l'objet d'inventaire attendu
-    code          CHAR(4) CHECK (code ~ '^[0-9]{4}$'),    -- bloqué par code : le code attendu
+    code          TEXT,                                   -- bloqué par code : la réponse attendue (chiffres ou texte)
     CHECK ((id_debloquant IS NULL) <> (code IS NULL))     -- exactement l'un des deux
 );
 
@@ -51,18 +52,46 @@ CREATE TABLE score (
     date   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Scénario d'exemple (à remplacer par le vrai scénario)
--- Icône par défaut de Leaflet : 25x41 px, pointe en (12, 41)
-INSERT INTO objet (id, nom, type, geom, zoom_min, icone_url, icone_largeur, icone_hauteur, ancre_x, ancre_y, depart, final) VALUES
-(1, 'Clé rouillée',     'recuperable',  ST_SetSRID(ST_MakePoint(2.3499, 48.8530), 4326), 14, 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', 25, 41, 12, 41, TRUE,  FALSE),
-(2, 'Coffre du Louvre', 'bloque_objet', ST_SetSRID(ST_MakePoint(2.3376, 48.8606), 4326), 14, 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', 25, 41, 12, 41, TRUE,  FALSE),
-(3, 'Parchemin',        'code',         ST_SetSRID(ST_MakePoint(2.3691, 48.8532), 4326), 15, 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', 25, 41, 12, 41, FALSE, FALSE),
-(4, 'Cadenas Eiffel',   'bloque_code',  ST_SetSRID(ST_MakePoint(2.2945, 48.8584), 4326), 14, 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', 25, 41, 12, 41, TRUE,  FALSE),
-(5, 'Trophée',          'recuperable',  ST_SetSRID(ST_MakePoint(2.3431, 48.8867), 4326), 15, 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', 25, 41, 12, 41, FALSE, TRUE);
+-- Scénario « La recette de papi » (voir scenario.md)
+-- Icônes : Twemoji (CC-BY 4.0), 32x32 px, ancrées en leur centre (16, 16)
+INSERT INTO objet (id, nom, type, geom, zoom_min, icone_url, icone_largeur, icone_hauteur, ancre_x, ancre_y, depart, final, message) VALUES
+(1,  'Pub à Dublin (lettre de papi)',          'recuperable',  ST_SetSRID(ST_MakePoint(-6.26430, 53.34550), 4326), 4,  'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2709.svg',  32, 32, 16, 16, TRUE,  FALSE,
+ 'Lettre de papi : « Rends-toi à la capitale du pays de la bière. » Un aigle est dessiné dessous. « Quand tout sera terminé, prends une photo de toi avec la tour Eiffel. »'),
+(2,  'Contact à Berlin',                       'recuperable',  ST_SetSRID(ST_MakePoint(13.41320, 52.52190), 4326), 13, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f4c7.svg', 32, 32, 16, 16, TRUE,  FALSE,
+ '« N''importe quoi, la meilleure bière c''est en Belgique ! Mon cousin de Bruxelles a ce que tu cherches. » Il te tend la carte de visite de son cousin.'),
+(3,  'Cousin à Bruxelles',                     'bloque_objet', ST_SetSRID(ST_MakePoint(4.35170, 50.84670), 4326),  13, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f9d4.svg', 32, 32, 16, 16, TRUE,  FALSE,
+ '« Ton carton d''invitation pour la fête du houblon ? Je l''ai confié à un ami, sous la cathédrale en choucroute. »'),
+(4,  'Homme sous la cathédrale',               'bloque_code',  ST_SetSRID(ST_MakePoint(7.75090, 48.58180), 4326),  10, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/26ea.svg',  32, 32, 16, 16, FALSE, FALSE,
+ '« Voici votre invitation. La fête, c''est à Haguenau. »'),
+(5,  'Carton d''invitation',                   'recuperable',  ST_SetSRID(ST_MakePoint(7.75110, 48.58200), 4326),  10, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f48c.svg', 32, 32, 16, 16, FALSE, FALSE,
+ 'Carton d''invitation à la fête du houblon.'),
+(6,  'Fête du houblon (Haguenau)',             'bloque_objet', ST_SetSRID(ST_MakePoint(7.78949, 48.81427), 4326),  14, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f37b.svg', 32, 32, 16, 16, TRUE,  FALSE,
+ 'Le code a été volé ! Le voleur « parlait de Mickey » et a laissé tomber son billet.'),
+(7,  'Billet du voleur',                       'recuperable',  ST_SetSRID(ST_MakePoint(7.78969, 48.81447), 4326),  14, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f3ab.svg', 32, 32, 16, 16, FALSE, FALSE,
+ 'Billet de train Haguenau → Marne-la-Vallée–Chessy.'),
+(8,  'Le voleur (gare Marne-la-Vallée–Chessy)', 'bloque_objet', ST_SetSRID(ST_MakePoint(2.78260, 48.86980), 4326),  16, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f9b9.svg', 32, 32, 16, 16, TRUE,  FALSE,
+ 'Voleur intercepté !'),
+(9,  'Carte chiffrée',                         'recuperable',  ST_SetSRID(ST_MakePoint(2.78280, 48.87000), 4326),  16, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f5fa.svg', 32, 32, 16, 16, FALSE, FALSE,
+ 'Carte chiffrée : il faut des géomaticiens pour la lire.'),
+(10, 'École Géodata Paris',                    'bloque_objet', ST_SetSRID(ST_MakePoint(2.58730, 48.84100), 4326),  16, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f393.svg', 32, 32, 16, 16, TRUE,  FALSE,
+ 'Carte déchiffrée : un point apparaît dans le Marais.'),
+(11, 'Point dans le Marais',                   'code',         ST_SetSRID(ST_MakePoint(2.36550, 48.85560), 4326),  16, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f4f0.svg', 32, 32, 16, 16, FALSE, FALSE,
+ 'Journal d''époque sur la loi de pureté de la bière. « Pour fêter la trouvaille de ce code, allez prendre une photo sur la tour Eiffel. »'),
+(12, 'Tour Eiffel',                            'bloque_objet', ST_SetSRID(ST_MakePoint(2.29450, 48.85840), 4326),  16, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f4f7.svg', 32, 32, 16, 16, TRUE,  FALSE,
+ 'Photo prise pour papi ! Direction le pub.'),
+(13, 'Coffre de papi (pub à Dublin)',          'bloque_code',  ST_SetSRID(ST_MakePoint(-6.26420, 53.34560), 4326), 12, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f512.svg', 32, 32, 16, 16, FALSE, FALSE,
+ 'La recette est détenue depuis toutes ces années par les maîtres brasseurs du Viaduc Café.'),
+(14, 'Viaduc Café (av. Daumesnil, Paris 12e)', 'recuperable',  ST_SetSRID(ST_MakePoint(2.37300, 48.84700), 4326),  14, 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f37a.svg', 32, 32, 16, 16, FALSE, TRUE,
+ 'Un dernier verre chez le vieil ami de papi : on siffle le tonneau !');
 SELECT setval('objet_id_seq', (SELECT max(id) FROM objet));
 
-INSERT INTO objet_code (id_objet, code) VALUES (3, '1789');
+INSERT INTO objet_code (id_objet, code) VALUES (11, '1516');
 
 INSERT INTO objet_bloque (id_objet, indice, id_libere, id_debloquant, code) VALUES
-(2, 'Ce coffre est fermé à clé. Cherche du côté de Notre-Dame.', 3, 1,    NULL),
-(4, 'Une date révolutionnaire ouvre ce cadenas.',               5, NULL, '1789');
+(3,  'Je ne reçois que sur recommandation.',                        4,  2,    NULL),
+(4,  'Comment est votre choucroute ?',                              5,  NULL, 'elle est bonne'),
+(6,  'Entrée sur invitation.',                                      7,  5,    NULL),
+(8,  'Lequel est le voleur ? Il faudrait une preuve de son trajet.', 9,  7,    NULL),
+(10, 'Apportez-nous la carte à déchiffrer.',                        11, 9,    NULL),
+(12, 'Papi voulait une photo…',                                     13, 1,    NULL),
+(13, 'Il vous faut le code confié au contact.',                     14, NULL, '1516');

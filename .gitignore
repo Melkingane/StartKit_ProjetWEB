@@ -3,5 +3,8 @@ CLAUDE.md
 CLAUDE.local.md
 .claude/
 
+#.md
+scenario.md
+
 # macOS
 .DS_Store

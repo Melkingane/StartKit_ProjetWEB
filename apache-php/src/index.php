@@ -51,12 +51,29 @@ Flight::route('GET /api/objets/@id:[0-9]+', function (string $id) {
     Flight::json(typerObjet($objet));
 });
 
+// POST api/scores : enregistre un score { "pseudo": "...", "points": 1234 }
+// Le score est calculé par le client : on vérifie seulement qu'il est plausible.
+Flight::route('POST /api/scores', function () {
+    $donnees = Flight::request()->data;
+    $pseudo = trim((string) ($donnees->pseudo ?? ''));
+    $points = $donnees->points ?? null;
+    if ($pseudo === '' || mb_strlen($pseudo) > 30 || !is_int($points) || $points < 0 || $points > 10000) {
+        Flight::json(['erreur' => 'Pseudo (1 à 30 caractères) et points (entier de 0 à 10000) requis'], 400);
+        return;
+    }
+    $requete = Flight::db()->prepare('INSERT INTO score (pseudo, points) VALUES (?, ?) RETURNING id, pseudo, points, date');
+    $requete->execute([$pseudo, $points]);
+    Flight::json($requete->fetch(), 201);
+});
+
 Flight::route('/jeu', function () {
     Flight::render('jeu');
 });
 
+// Accueil avec le Hall of fame : 10 meilleurs scores (à égalité, le plus ancien d'abord)
 Flight::route('/', function() {
-    Flight::render('accueil');
+    $scores = Flight::db()->query('SELECT pseudo, points, date FROM score ORDER BY points DESC, date LIMIT 10')->fetchAll();
+    Flight::render('accueil', ['scores' => $scores]);
 });
 
 Flight::route('/test-db', function () {

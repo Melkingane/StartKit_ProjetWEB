@@ -14,14 +14,23 @@ createApp({
             codeSaisi: '',
             fini: false,
             triche: false,       // case « tricher » cochée ?
+            aTriche: false,      // la triche a-t-elle été utilisée au moins une fois ? (pénalité)
+            erreurs: 0,          // nombre de mauvais codes saisis (pénalité)
+            score: null,         // calculé à la fin de la partie
+            pseudo: '',
+            scoreEnregistre: false,
         };
     },
 
-    // Case « tricher » : affiche / masque la heatmap GeoServer
+    // Case « tricher » : affiche / masque la heatmap GeoServer, et retient qu'elle a servi
     watch: {
         triche(active) {
-            if (active) this.heatmap.addTo(this.carte);
-            else this.heatmap.remove();
+            if (active) {
+                this.heatmap.addTo(this.carte);
+                this.aTriche = true;
+            } else {
+                this.heatmap.remove();
+            }
         },
     },
 
@@ -34,6 +43,7 @@ createApp({
             attribution: '&copy; OpenStreetMap',
         }).addTo(this.carte);
         this.marqueurs = {};  // id objet -> { objet, marqueur }
+        this.debut = Date.now();  // début de la partie, pour le score
 
         // Heatmap de tous les objets, servie en WMS par GeoServer (couche escape:objet, style heatmap).
         // Créée ici mais ajoutée à la carte seulement quand la case « tricher » est cochée.
@@ -131,6 +141,7 @@ createApp({
                 this.objetCode = null;
                 this.debloquer(objet);
             } else {
+                this.erreurs++;
                 this.message = `Mauvais code. Indice : ${this.objetCode.indice}`;
             }
         },
@@ -151,10 +162,25 @@ createApp({
             this.selection = this.selection === objet.id ? null : objet.id;
         },
 
-        // Fin de partie (le calcul et l'enregistrement du score viendront ici)
+        // Fin de partie : calcul du score
+        // score = 10 000 − 1 par seconde − 100 par mauvais code − 1 000 si triche utilisée (minimum 0)
         terminer() {
+            const secondes = Math.round((Date.now() - this.debut) / 1000);
+            this.score = Math.max(0, 10000 - secondes - 100 * this.erreurs - (this.aTriche ? 1000 : 0));
             this.fini = true;
-            this.message += ' Bravo, tu as terminé la partie !';
+            this.message += ` Bravo, tu as terminé la partie en ${Math.floor(secondes / 60)} min ${secondes % 60} s !`;
+        },
+
+        // Envoie le pseudo et le score à l'API pour le Hall of fame
+        enregistrerScore() {
+            fetch('/api/scores', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pseudo: this.pseudo, points: this.score }),
+            }).then(reponse => {
+                if (reponse.ok) this.scoreEnregistre = true;
+                else this.message = 'Le score n\'a pas pu être enregistré.';
+            });
         },
     },
 }).mount('#app');

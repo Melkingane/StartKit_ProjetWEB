@@ -11,6 +11,10 @@
         .note { margin: 2rem 0; }
         ol { line-height: 1.6; }
         .bouton { font-size: 1.3rem; padding: .6rem 1.6rem; transform: rotate(1deg); }
+        .aide { font-size: .85rem; }
+        .hall { font-family: var(--machine); padding-left: 1.5rem; }
+        .hall li { border-bottom: 1px dashed var(--encre); padding: .3rem 0; }
+        .hall b { float: right; }
     </style>
 </head>
 <body>
@@ -31,6 +35,19 @@
         </ol>
 
         <p><a class="bouton" href="/jeu">Jouer</a></p>
+
+        <h2>Hall of fame</h2>
+        <p class="aide">Score = 10 000 − 1 par seconde de jeu − 100 par mauvais code − 1 000 si la triche a été utilisée.</p>
+        <?php if (!$scores): ?>
+            <p>Aucun score pour l'instant. Sois le premier !</p>
+        <?php else: ?>
+            <ol class="hall">
+                <?php foreach ($scores as $s): ?>
+                    <!-- htmlspecialchars : un pseudo contenant du HTML s'affiche comme du texte -->
+                    <li><span><?= htmlspecialchars($s['pseudo']) ?></span> <b><?= $s['points'] ?></b></li>
+                <?php endforeach; ?>
+            </ol>
+        <?php endif; ?>
     </main>
 </body>
 </html>

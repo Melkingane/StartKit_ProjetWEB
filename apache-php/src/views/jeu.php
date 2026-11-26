@@ -39,6 +39,17 @@
             <h1><a href="/">La recette de papi</a></h1>
             <div class="note" aria-live="polite">{{ message }}</div>
 
+            <template v-if="fini">
+                <h2>Score : {{ score }}</h2>
+                <p class="aide">10 000 − {{ erreurs }} mauvais code(s) × 100 − le temps en secondes<span v-if="aTriche"> − 1 000 (triche)</span></p>
+                <form v-if="!scoreEnregistre" @submit.prevent="enregistrerScore">
+                    <label for="pseudo">Ton pseudo pour le Hall of fame :</label>
+                    <input id="pseudo" v-model="pseudo" maxlength="30" required>
+                    <button>Enregistrer</button>
+                </form>
+                <p v-else>Score enregistré ! <a href="/">Voir le Hall of fame</a></p>
+            </template>
+
             <form v-if="objetCode" @submit.prevent="verifierCode">
                 <label for="code">Code de {{ objetCode.nom }} :</label>
                 <input id="code" v-model="codeSaisi" required autofocus>

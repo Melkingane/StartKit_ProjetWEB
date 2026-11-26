@@ -1,0 +1,78 @@
+/* Style « carnet d'enquête » (Lo-Fi) commun à l'accueil et au jeu */
+
+:root {
+    --papier: #EDE4CF;    /* fond jaune papier */
+    --encre: #1D1A16;     /* texte */
+    --rose: #FF006E;      /* accent (impression décalée, sélection) */
+    --cyan: #00B3A4;      /* second passage d'impression */
+    --scotch: rgba(255, 250, 220, .7);
+    --titre: "Times New Roman", Times, serif;
+    --machine: "Courier New", Courier, monospace;
+    --texte: Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    color: var(--encre);
+    font-family: var(--texte);
+    background-color: var(--papier);
+    background-image: radial-gradient(rgba(29, 26, 22, .08) 1px, transparent 1px);  /* trame de points */
+    background-size: 6px 6px;
+}
+
+/* Titre : légèrement penché, avec un décalage d'impression rose/cyan */
+h1 {
+    font-family: var(--titre);
+    font-size: 2.2rem;
+    line-height: 1;
+    margin: 0 0 1rem;
+    transform: rotate(-2deg);
+    text-shadow: 2px 0 var(--rose), -2px 0 var(--cyan);
+}
+
+h2 {
+    font-family: var(--titre);
+    font-size: 1.3rem;
+    border-bottom: 1px solid var(--encre);
+    margin: 1.5rem 0 .75rem;
+}
+
+a { color: var(--encre); }
+
+/* Note scotchée : un rectangle de papier blanc penché, avec un bout de scotch en haut */
+.note {
+    position: relative;
+    background: #FFFDF6;
+    padding: 1.2rem 1rem .9rem;
+    font-family: var(--machine);
+    font-size: .95rem;
+    line-height: 1.4;
+    transform: rotate(-1.5deg);
+    box-shadow: 2px 3px 0 rgba(29, 26, 22, .25);
+}
+.note::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 80px;
+    height: 22px;
+    margin-left: -40px;
+    background: var(--scotch);
+    border: 1px solid rgba(29, 26, 22, .1);
+    transform: rotate(3deg);
+}
+
+/* Boutons et champs : bord à l'encre, police machine à écrire */
+button, .bouton, input {
+    font-family: var(--machine);
+    font-size: 1rem;
+    color: var(--encre);
+    border: 2px solid var(--encre);
+    background: #FFFDF6;
+    padding: .4rem .8rem;
+}
+button, .bouton { cursor: pointer; text-decoration: none; display: inline-block; }
+button:hover, .bouton:hover { background: var(--encre); color: var(--papier); }

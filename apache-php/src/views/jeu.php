@@ -3,21 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escape game</title>
+    <title>La recette de papi</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="/css/style.css">
     <style>
-        body { margin: 0; font-family: system-ui, sans-serif; }
         #app { display: flex; height: 100vh; }
-        #carte { flex: 1; }
-        aside { width: 300px; padding: 1rem; overflow-y: auto; box-sizing: border-box; }
-        .message { background: #f3f0e6; padding: .75rem; border-radius: 6px; }
-        .inventaire { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
-        .inventaire button { display: flex; flex-direction: column; align-items: center; padding: .4rem; border: 2px solid #ccc; border-radius: 6px; background: white; cursor: pointer; }
-        .inventaire button.selectionne { border-color: #d35400; }
+        #carte { flex: 1; border-right: 2px solid var(--encre); }
+        .leaflet-tile-pane { filter: sepia(.45) saturate(.8); }  /* fond de carte vieilli, marqueurs intacts */
+        aside { width: 320px; padding: 1.5rem 1.2rem; overflow-y: auto; }
+        h1 a { text-decoration: none; }
+        form { margin-top: 1.2rem; display: flex; flex-wrap: wrap; gap: .5rem; align-items: end; }
+        form label { width: 100%; font-family: var(--machine); }
+        form input { flex: 1; min-width: 0; }
+
+        /* Inventaire : chaque objet est un petit ticket penché ; le sélectionné se redresse et passe en rose */
+        .inventaire { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: .6rem; }
+        .inventaire button { display: flex; flex-direction: column; align-items: center; gap: .3rem; width: 130px; font-size: .8rem; border-style: dashed; }
+        .inventaire li:nth-child(odd) button { transform: rotate(-2deg); }
+        .inventaire li:nth-child(even) button { transform: rotate(2deg); }
+        .inventaire button.selectionne { transform: none; border: 3px solid var(--rose); background: #FFFDF6; color: var(--encre); }
         .inventaire img { height: 32px; }
+        .aide { font-size: .85rem; }
+
         @media (max-width: 700px) {
             #app { flex-direction: column; }
-            aside { width: auto; height: 40vh; }
+            #carte { border-right: 0; border-bottom: 2px solid var(--encre); }
+            aside { width: auto; height: 45vh; }
         }
     </style>
 </head>
@@ -25,19 +36,18 @@
     <div id="app">
         <div id="carte"></div>
         <aside>
-            <h1>Escape game</h1>
-            <p class="message">{{ message }}</p>
+            <h1><a href="/">La recette de papi</a></h1>
+            <div class="note" aria-live="polite">{{ message }}</div>
 
             <form v-if="objetCode" @submit.prevent="verifierCode">
-                <label>Code de {{ objetCode.nom }} :
-                    <input v-model="codeSaisi" required autofocus>
-                </label>
+                <label for="code">Code de {{ objetCode.nom }} :</label>
+                <input id="code" v-model="codeSaisi" required autofocus>
                 <button>Valider</button>
             </form>
 
             <h2>Inventaire</h2>
-            <p v-if="inventaire.length === 0">Vide.</p>
-            <p v-else>Clique sur un objet pour le sélectionner, puis sur l'objet bloqué de la carte.</p>
+            <p class="aide" v-if="inventaire.length === 0">Vide.</p>
+            <p class="aide" v-else>Clique sur un objet pour le sélectionner, puis sur l'objet bloqué de la carte.</p>
             <ul class="inventaire">
                 <li v-for="objet in inventaire" :key="objet.id">
                     <button :class="{ selectionne: selection === objet.id }" @click="selectionner(objet)">

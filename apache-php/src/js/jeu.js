@@ -13,7 +13,16 @@ createApp({
             objetCode: null,     // objet bloqué par code dont le formulaire est ouvert
             codeSaisi: '',
             fini: false,
+            triche: false,       // case « tricher » cochée ?
         };
+    },
+
+    // Case « tricher » : affiche / masque la heatmap GeoServer
+    watch: {
+        triche(active) {
+            if (active) this.heatmap.addTo(this.carte);
+            else this.heatmap.remove();
+        },
     },
 
     // Création de la carte une fois le HTML en place, puis chargement des objets de départ.
@@ -25,6 +34,16 @@ createApp({
             attribution: '&copy; OpenStreetMap',
         }).addTo(this.carte);
         this.marqueurs = {};  // id objet -> { objet, marqueur }
+
+        // Heatmap de tous les objets, servie en WMS par GeoServer (couche escape:objet, style heatmap).
+        // Créée ici mais ajoutée à la carte seulement quand la case « tricher » est cochée.
+        // pane overlayPane : au-dessus du fond de carte et hors du filtre sépia appliqué aux tuiles.
+        this.heatmap = L.tileLayer.wms(`${location.protocol}//${location.hostname}:8080/geoserver/escape/wms`, {
+            layers: 'escape:objet',
+            format: 'image/png',
+            transparent: true,
+            pane: 'overlayPane',
+        });
 
         // À chaque changement de zoom, on montre/cache les objets selon leur zoom minimal
         this.carte.on('zoomend', () => this.majVisibilite());

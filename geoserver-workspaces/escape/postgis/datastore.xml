@@ -1,0 +1,22 @@
+<dataStore>
+  <id>DataStoreInfoImpl--32cef7ea:1a2171e490b:-7ffd</id>
+  <name>postgis</name>
+  <type>PostGIS</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--32cef7ea:1a2171e490b:-7fff</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="schema">public</entry>
+    <entry key="database">mydb</entry>
+    <entry key="port">5432</entry>
+    <entry key="passwd">crypt2:QhHiX3xnyKJN7bKXuWQ0nkVy/xtZzUKlUvdsuKLgUhc=</entry>
+    <entry key="dbtype">postgis</entry>
+    <entry key="host">db</entry>
+    <entry key="namespace">http://escape</entry>
+    <entry key="user">postgres</entry>
+  </connectionParameters>
+  <__default>false</__default>
+  <dateCreated>2026-11-26 09:10:01.725 UTC</dateCreated>
+  <disableOnConnFailure>false</disableOnConnFailure>
+</dataStore>

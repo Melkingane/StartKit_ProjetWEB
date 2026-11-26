@@ -45,6 +45,8 @@
                 <button>Valider</button>
             </form>
 
+            <p class="aide"><label><input type="checkbox" v-model="triche"> Tricher (afficher où sont les objets)</label></p>
+
             <h2>Inventaire</h2>
             <p class="aide" v-if="inventaire.length === 0">Vide.</p>
             <p class="aide" v-else>Clique sur un objet pour le sélectionner, puis sur l'objet bloqué de la carte.</p>

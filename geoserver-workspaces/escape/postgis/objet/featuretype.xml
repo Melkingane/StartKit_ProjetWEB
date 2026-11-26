@@ -1,0 +1,41 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--32cef7ea:1a2171e490b:-7ffc</id>
+  <name>objet</name>
+  <nativeName>objet</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--32cef7ea:1a2171e490b:-7ffe</id>
+  </namespace>
+  <title>objet</title>
+  <keywords>
+    <string>features</string>
+    <string>objet</string>
+  </keywords>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>-6.2643</minx>
+    <maxx>13.4132</maxx>
+    <miny>48.5818</miny>
+    <maxy>53.3456</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-6.2643</minx>
+    <maxx>13.4132</maxx>
+    <miny>48.5818</miny>
+    <maxy>53.3456</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--32cef7ea:1a2171e490b:-7ffd</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <padWithZeros>false</padWithZeros>
+  <forcedDecimal>false</forcedDecimal>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

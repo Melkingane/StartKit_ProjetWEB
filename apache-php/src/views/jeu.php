@@ -9,7 +9,7 @@
     <style>
         #app { display: flex; height: 100vh; }
         #carte { flex: 1; border-right: 2px solid var(--encre); }
-        .leaflet-tile-pane { filter: sepia(.45) saturate(.8); }  /* fond de carte vieilli, marqueurs intacts */
+        .leaflet-tile-pane { filter: sepia(.2) saturate(.9); }  /* fond de carte vieilli, marqueurs intacts */
         aside { width: 320px; padding: 1.5rem 1.2rem; overflow-y: auto; }
         h1 a { text-decoration: none; }
         form { margin-top: 1.2rem; display: flex; flex-wrap: wrap; gap: .5rem; align-items: end; }

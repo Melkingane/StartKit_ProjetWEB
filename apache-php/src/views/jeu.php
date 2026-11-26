@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La recette de papi</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/style.css?v=<?= filemtime(__DIR__ . '/../css/style.css') ?>">
     <style>
         #app { display: flex; height: 100vh; }
         #carte { flex: 1; border-right: 2px solid var(--encre); }
@@ -63,6 +63,7 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
-    <script src="/js/jeu.js"></script>
+    <!-- ?v=date de modification : le navigateur recharge le fichier dès qu'il change -->
+    <script src="/js/jeu.js?v=<?= filemtime(__DIR__ . '/../js/jeu.js') ?>"></script>
 </body>
 </html>
